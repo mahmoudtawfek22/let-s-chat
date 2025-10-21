@@ -1,0 +1,202 @@
+<div class="user-profile-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading() && !userProfile()" class="loading-spinner">Loading data...</div>
+
+  <!-- Profile Section -->
+  <div *ngIf="userProfile() && currentUser()" class="profile-card">
+    <!-- Header -->
+    <div class="profile-header">
+      <h2>User Profile</h2>
+      <p>Manage your account information and privacy settings</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-container">
+      <button
+        [class.active]="activeTab() === 'profile'"
+        (click)="setActiveTab('profile')"
+        class="tab-btn"
+      >
+        🏠 Personal Information
+      </button>
+      <button
+        [class.active]="activeTab() === 'security'"
+        (click)="setActiveTab('security')"
+        class="tab-btn"
+      >
+        🔒 Security
+      </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      <!-- Personal Info Tab -->
+      <div *ngIf="activeTab() === 'profile'" class="profile-tab">
+        <div class="account-info">
+          <h3>Account Information</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <strong>Created At:</strong>
+              <span>{{ userProfile()?.createdAt?.toDate() | date : 'medium' }}</span>
+            </div>
+            <div class="info-item">
+              <strong>Last Login:</strong>
+              <span>{{ userProfile()?.lastLoginAt?.toDate() | date : 'medium' }}</span>
+            </div>
+            <div class="info-item">
+              <strong>Connection Status:</strong>
+              <span [class]="userProfile()?.isOnline ? 'online' : 'offline'">
+                {{ userProfile()?.isOnline ? '🟢 Online' : '🔴 Offline' }}
+              </span>
+            </div>
+          </div>
+        </div>
+        <!-- Profile Photo -->
+
+        <!-- Profile Form -->
+        <form [formGroup]="profileForm" (ngSubmit)="updateProfile()" class="profile-form">
+          <div class="form-group">
+            <label for="displayName">Display Name *</label>
+            <input
+              id="displayName"
+              type="text"
+              formControlName="displayName"
+              class="form-input"
+              placeholder="Enter your name"
+            />
+            <div
+              *ngIf="
+                profileForm.get('displayName')?.invalid && profileForm.get('displayName')?.touched
+              "
+              class="error-message"
+            >
+              Name is required and must be at least 2 characters long
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              [value]="userProfile()?.email"
+              class="form-input"
+              disabled
+            />
+            <small>Email cannot be changed from here</small>
+          </div>
+
+          <div class="form-group">
+            <label for="phoneNumber">Phone Number</label>
+            <input
+              id="phoneNumber"
+              type="tel"
+              formControlName="phoneNumber"
+              class="form-input"
+              placeholder="Enter your phone number"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="bio">About You</label>
+            <textarea
+              id="bio"
+              formControlName="bio"
+              class="form-textarea"
+              placeholder="Write a short bio..."
+              rows="3"
+            ></textarea>
+            <small>{{ profileForm.get('bio')?.value?.length || 0 }}/200</small>
+          </div>
+
+          <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status" formControlName="status" class="form-select">
+              <option value="online">🟢 Online</option>
+              <option value="away">🟡 Away</option>
+              <option value="busy">🔴 Busy</option>
+            </select>
+          </div>
+          <div class="d-flex justify-content-between">
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="profileForm.invalid || isLoading()"
+            >
+              {{ isLoading() ? 'Saving...' : 'Save Changes' }}
+            </button>
+
+            <button type="button" class="btn btn-secondary" routerLink="/chat">Back to Chat</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Security Tab -->
+      <div *ngIf="activeTab() === 'security'" class="security-tab">
+        <!-- Change Password -->
+        <div class="security-section">
+          <h3>Change Password</h3>
+          <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="security-form">
+            <div class="form-group">
+              <label for="currentPassword">Current Password *</label>
+              <input
+                id="currentPassword"
+                type="password"
+                formControlName="currentPassword"
+                class="form-input"
+                placeholder="Enter your current password"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="newPassword">New Password *</label>
+              <input
+                id="newPassword"
+                type="password"
+                formControlName="newPassword"
+                class="form-input"
+                placeholder="Enter your new password"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="confirmPassword">Confirm Password *</label>
+              <input
+                id="confirmPassword"
+                type="password"
+                formControlName="confirmPassword"
+                class="form-input"
+                placeholder="Re-enter your new password"
+              />
+              <div
+                *ngIf="
+                  passwordForm.hasError('passwordMismatch') &&
+                  passwordForm.get('confirmPassword')?.touched
+                "
+                class="error-message"
+              >
+                Passwords do not match
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="passwordForm.invalid || isLoading()"
+            >
+              Change Password
+            </button>
+          </form>
+        </div>
+
+        <!-- Account Info -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Not Logged In -->
+  <div *ngIf="!currentUser()" class="not-logged-in">
+    <h3>Not Logged In</h3>
+    <p>You must be logged in to view your profile</p>
+  </div>
+</div>

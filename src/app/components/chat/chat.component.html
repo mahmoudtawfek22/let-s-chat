@@ -1,0 +1,195 @@
+<div
+  class="chat-container"
+  #chatContainer
+  [ngClass]="{ 'list-active': !chatView(), 'chat-active': chatView() }"
+>
+  <div class="main-chat-interface">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="app-logo">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 200 200"
+            width="35"
+            height="35"
+            class="logo-svg"
+          >
+            <g transform="translate(30,30)">
+              <rect x="0" y="0" width="110" height="90" rx="22" ry="22" fill="#3498db" />
+              <path d="M20 90 L36 106 L34 80 Z" fill="#3498db" />
+            </g>
+            <g transform="translate(60,50)">
+              <rect
+                x="0"
+                y="0"
+                width="110"
+                height="90"
+                rx="22"
+                ry="22"
+                fill="#7C3AED"
+                opacity="0.95"
+              />
+              <path d="M20 90 L36 106 L34 80 Z" fill="#7C3AED" />
+            </g>
+            <text
+              x="56"
+              y="110"
+              font-family="Arial"
+              font-size="46"
+              fill="#FFFFFF"
+              font-weight="700"
+            >
+              L
+            </text>
+            <text
+              x="86"
+              y="110"
+              font-family="Arial"
+              font-size="46"
+              fill="#FFFFFF"
+              font-weight="700"
+            >
+              C
+            </text>
+          </svg>
+          <span class="logo-text">let's chat</span>
+        </div>
+        <div class="user-info">
+          <strong>{{ currentUser()?.displayName || currentUser()?.email }}</strong>
+          <button (click)="logout()" class="logout-btn">Logout</button>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="sidebar-tabs">
+        <button
+          [class.active]="activeTab() === 'chats'"
+          (click)="activeTab.set('chats')"
+          class="tab-btn"
+        >
+          Chats
+        </button>
+        <button
+          [class.active]="activeTab() === 'users'"
+          (click)="activeTab.set('users')"
+          class="tab-btn"
+        >
+          Users ({{ onlineUsers().length }})
+        </button>
+      </div>
+
+      <!-- Chats List -->
+      @if (activeTab() === 'chats') {
+      <div class="chats-list">
+        @for (chat of chats(); track chat.id) {
+        <div
+          (click)="selectChat(chat)"
+          [class.active]="selectedChat()?.id === chat.id"
+          class="chat-item"
+        >
+          <div class="chat-avatar">{{ getDisplayName(chat)[0] }}</div>
+          <div class="chat-info">
+            <div class="chat-name">{{ getDisplayName(chat) }}</div>
+            <div class="chat-last-message">{{ getLastMessagePreview(chat) }}</div>
+          </div>
+          @if (chat.lastMessageTime) {
+          <div class="chat-time">{{ formatTimestamp(chat.lastMessageTime) }}</div>
+          }
+        </div>
+        } @if (chats().length === 0) {
+        <div class="no-chats">No conversations yet. Start chatting with users!</div>
+        }
+      </div>
+      }
+
+      <!-- Users List -->
+      @if (activeTab() === 'users') {
+      <div class="users-list">
+        @for (user of users(); track user.uid) {
+        <div
+          (click)="selectUser(user)"
+          [class.active]="selectedUser()?.uid === user.uid"
+          class="user-item"
+        >
+          <div class="user-avatar">{{ user.displayName[0] }}</div>
+          <div class="user-info">
+            <div class="user-name">{{ user.displayName }}</div>
+          </div>
+          <div class="user-status" [class.online]="user.isOnline"></div>
+        </div>
+        } @if (users().length === 0) {
+        <div class="no-users">No other users found.</div>
+        }
+      </div>
+      }
+    </div>
+
+    <!-- Chat Area -->
+    <div class="chat-area">
+      @if (!selectedUser()) {
+      <div class="no-chat-selected">
+        <div class="welcome-message">
+          <h3>Welcome to Chat App</h3>
+          <p>Select a user from the sidebar to start chatting</p>
+        </div>
+      </div>
+      } @if (selectedUser()) {
+      <div class="active-chat">
+        <!-- Chat Header -->
+        <div class="chat-header">
+          <div class="chat-partner-info">
+            <div class="partner-details">
+              <div class="list-chat-toggle-btn">
+                <i class="fa-solid fa-arrow-left" (click)="toggleToList()"></i>
+              </div>
+              <div>
+                <strong>{{ selectedUser()?.displayName }}</strong>
+                <span class="status" [class.online]="selectedUser()?.isOnline">
+                  {{ selectedUser()?.isOnline ? 'Online' : 'Offline' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Messages Container -->
+        <div class="messages-container">
+          @for (message of messages(); track message.timestamp) {
+          <div class="message" [class.own-message]="message.senderId === currentUser()?.uid">
+            <div class="message-header">
+              <strong>{{ message.senderName }}</strong>
+              <span class="timestamp">{{ formatTimestamp(message.timestamp) }}</span>
+            </div>
+            <div class="message-text">{{ message.text }}</div>
+          </div>
+          } @if (typingstatus()?.state && selectedUser()?.uid == typingstatus()?.userId) {
+          <div class="typing-indicator">
+            <div class="typing-content">
+              <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </div>
+          }
+
+          <!-- Message Input -->
+          <div class="message-input">
+            <input
+              type="text"
+              [(ngModel)]="newMessage"
+              (keyup.enter)="sendMessage()"
+              (input)="typing()"
+              placeholder="Type your message..."
+              class="message-input-field"
+            />
+            <button (click)="sendMessage()" class="send-btn">Send</button>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+</div>

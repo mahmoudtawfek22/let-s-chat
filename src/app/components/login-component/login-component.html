@@ -1,0 +1,125 @@
+<div class="chat-container">
+  <div class="auth-section">
+    <!-- إضافة الشعار -->
+    <div class="logo-container">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 200 200"
+        width="60"
+        height="60"
+        class="logo-svg"
+      >
+        <g transform="translate(30,30)">
+          <rect x="0" y="0" width="110" height="90" rx="22" ry="22" fill="#06B6D4" />
+          <path d="M20 90 L36 106 L34 80 Z" fill="#06B6D4" />
+        </g>
+        <g transform="translate(60,50)">
+          <rect x="0" y="0" width="110" height="90" rx="22" ry="22" fill="#7C3AED" opacity="0.95" />
+          <path d="M20 90 L36 106 L34 80 Z" fill="#7C3AED" />
+        </g>
+        <text x="56" y="110" font-family="Arial" font-size="46" fill="#FFFFFF" font-weight="700">
+          L
+        </text>
+        <text x="86" y="110" font-family="Arial" font-size="46" fill="#FFFFFF" font-weight="700">
+          C
+        </text>
+      </svg>
+      <h1 class="app-title">let's chat</h1>
+    </div>
+
+    <h2>{{ isRegistering ? 'Create Account' : 'Welcome Back' }}</h2>
+
+    <!-- رسالة الخطأ -->
+    @if (errorMessage) {
+    <div class="error-message">
+      {{ errorMessage }}
+    </div>
+    }
+    <form>
+      <div class="auth-form">
+        @if (isRegistering) {
+        <div class="form-group">
+          <input
+            type="text"
+            [(ngModel)]="displayName"
+            placeholder="Display Name"
+            class="form-input"
+            name="displayName"
+            #displayNamee="ngModel"
+            required
+            minlength="4"
+            [class.is-invalid]="displayNamee.touched && displayNamee.invalid"
+          />
+          @if(displayNamee.touched&&displayNamee.invalid) { @if(displayNamee.hasError('minlength')){
+
+          <div class="invalid-feedback">Display name must be at least 4 characters long</div>
+          } @if(displayNamee.hasError('required')){
+
+          <div class="invalid-feedback">Display name is required</div>
+          }}
+        </div>
+        }
+
+        <div class="form-group">
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            class="form-input"
+            required
+            email
+            [(ngModel)]="authEmail"
+            #email="ngModel"
+            [class.is-invalid]="email.touched && email.invalid"
+          />
+          @if(email.touched&&email.invalid) { @if(email.hasError('email')){
+
+          <div class="invalid-feedback">Please enter a valid email address.</div>
+          } @if(email.hasError('required')){
+
+          <div class="invalid-feedback">Email is required</div>
+          }}
+        </div>
+
+        <div class="form-group">
+          <div class="password-group">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="Password (min 6 characters)"
+              class="form-input"
+              required
+              [autocomplete]="isRegistering ? 'new-password' : 'current-password'"
+              name="password"
+              minlength="6"
+              [(ngModel)]="authPassword"
+              #password="ngModel"
+              [class.is-invalid]="password.touched && password.invalid"
+            />
+
+            <!-- Eye Icon -->
+            <i
+              class="fa-solid toggle-password-icon"
+              [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+              (click)="showPassword = !showPassword"
+            ></i>
+          </div>
+          @if(password.touched && password.invalid) { @if(password.hasError('minlength')) {
+          <div class="invalid-feedback d-block">Password must be at least 6 characters long</div>
+          } @if(password.hasError('required')) {
+          <div class="invalid-feedback d-block">Password is required</div>
+          } }
+        </div>
+
+        <button (click)="handleAuth()" class="auth-btn" [disabled]="isLoading">
+          @if (isLoading) {
+          <span class="loading-spinner"></span>
+          }
+          {{ isLoading ? 'Please wait...' : isRegistering ? 'Create Account' : 'Sign In' }}
+        </button>
+      </div>
+    </form>
+    <button (click)="isRegistering = !isRegistering" class="switch-auth-btn">
+      {{ isRegistering ? 'Already have an account? Sign In' : 'Need an account? Create One' }}
+    </button>
+  </div>
+</div>
