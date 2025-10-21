@@ -93,6 +93,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     await this.chatService.createUserProfile(user);
+    this.router.navigate(['/profile']);
+
     this.authEmail = '';
     this.authPassword = '';
     this.displayName = '';
