@@ -88,12 +88,13 @@ export class ChatComponent implements OnInit, OnDestroy {
     const currentUser = this.currentUser().uid;
     const other = this.selectedUser()?.uid;
     const chatId = this.chatService.getOrCreateChat(currentUser, other);
+    console.log(currentUser, '????', other, '???', chatId);
 
     this.chatService.updateChatMetadata(
       chatId,
       currentUser,
       other,
-      this.messages()[this.messages().length - 1].text,
+      this.messages().length > 0 ? this.messages()[this.messages().length - 1]?.text : '',
       {
         userId: currentUser,
         state: true,
@@ -112,7 +113,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       chatId,
       currentUser,
       other,
-      this.messages()[this.messages().length - 1].text,
+      this.messages().length > 0 ? this.messages()[this.messages().length - 1]?.text : '',
       {
         userId: currentUser,
         state: false,
@@ -122,8 +123,6 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   typingState(chatId: string) {
     this.chatService.getChat(chatId).subscribe((chat) => {
-      console.log(chat);
-
       this.typingstatus.set(chat.typing);
       this.scrollToBottom();
     });
