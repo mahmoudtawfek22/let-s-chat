@@ -93,7 +93,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     await this.chatService.createUserProfile(user);
-    this.router.navigate(['/profile']);
+    this.router.navigate(['/chat']);
 
     this.authEmail = '';
     this.authPassword = '';
@@ -113,7 +113,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.toast.success('logged in succesfully');
       this.authEmail = '';
       this.authPassword = '';
-      this.router.navigate(['/profile']);
+      this.router.navigate(['/chat']);
     } catch (error: any) {
       throw error;
     }
