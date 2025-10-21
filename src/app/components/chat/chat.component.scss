@@ -53,6 +53,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  span:hover {
+    cursor: pointer;
+    color: var(--cyan-500);
+  }
 }
 
 .logout-btn {

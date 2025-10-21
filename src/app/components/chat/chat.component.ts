@@ -22,13 +22,14 @@ import {
   signOut,
 } from '@angular/fire/auth';
 import { Firestore, doc, setDoc, serverTimestamp } from '@angular/fire/firestore';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
 })
 export class ChatComponent implements OnInit, OnDestroy {
   private chatService = inject(FirebaseService);

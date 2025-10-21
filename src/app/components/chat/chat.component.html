@@ -56,7 +56,9 @@
           <span class="logo-text">let's chat</span>
         </div>
         <div class="user-info">
-          <strong>{{ currentUser()?.displayName || currentUser()?.email }}</strong>
+          <span [routerLink]="['/profile']">
+            <strong>{{ currentUser()?.displayName || currentUser()?.email | titlecase }}</strong>
+          </span>
           <button (click)="logout()" class="logout-btn">Logout</button>
         </div>
       </div>
