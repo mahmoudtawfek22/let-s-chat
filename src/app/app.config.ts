@@ -21,7 +21,6 @@ import { provideToastr } from 'ngx-toastr';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    // provideZoneChangeDetection({ eventCoalescing: true }),
     provideZonelessChangeDetection(),
     provideRouter(routes, withViewTransitions()),
     provideFirebaseApp(() => initializeApp(environment.firebase)),

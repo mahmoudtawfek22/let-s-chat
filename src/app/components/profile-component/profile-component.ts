@@ -13,7 +13,6 @@ import { Subscription } from 'rxjs';
 import { ProfileService } from '../../services/profile-service';
 import { RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { Modal } from 'bootstrap';
 
 @Component({
   standalone: true,

@@ -18,7 +18,6 @@
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-  min-height: 100vh;
 
   overflow: hidden;
 }
@@ -161,14 +160,20 @@
     align-items: center;
     gap: 1rem;
   }
+}
+.profile-header p {
+  font-size: 0.7rem;
+}
+.chat-nav-btn {
+  align-self: flex-start;
+}
 
-  .chat-nav-btn {
-    align-self: flex-start;
-  }
-
-  .header-text h2 {
-    font-size: 1.5rem;
-  }
+.header-text h2 {
+  font-size: 1.5rem;
+}
+.modalbtn {
+  padding: 0.5rem !important;
+  text-wrap: nowrap;
 }
 
 @media (max-width: 480px) {
@@ -262,6 +267,12 @@
   color: white;
   padding: 0.5rem 0.7rem;
   border-radius: 10px;
+  border: none;
+}
+
+.btn {
+  padding: 0.5rem 0.7rem !important;
+  border-radius: 10px !important;
   border: none;
 }
 /* النماذج */
@@ -418,23 +429,32 @@
 /* التجاوب مع الشاشات الصغيرة */
 @media (max-width: 768px) {
   .user-profile-container {
-    padding: 0;
+    padding: 20px;
+  }
+  .account-info h3 {
+    margin-bottom: 0px;
+    color: #333;
+    text-wrap: nowrap;
+    font-size: large;
   }
   .profile-card {
-    border-radius: 0px;
+    border-radius: 10px;
   }
   .tab-content {
     padding: 20px;
   }
 
   .tabs-container {
-    flex-direction: row;
+    flex-direction: column;
   }
 
   .photo-actions {
     flex-direction: column;
   }
-
+  .info-grid {
+    display: grid;
+    gap: 0;
+  }
   .info-item {
     flex-direction: column;
     gap: 5px;
