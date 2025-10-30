@@ -2,7 +2,6 @@ import {
   Component,
   inject,
   OnInit,
-  OnDestroy,
   signal,
   Renderer2,
   ViewChild,
@@ -13,10 +12,9 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserProfile, Message, Chat } from '../../models/models';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import { FirebaseService } from '../../services/firebase';
 import { RouterLink } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-chat',
@@ -42,7 +40,7 @@ export class ChatComponent implements OnInit {
   chatView = signal(false);
   typingstatus = signal<{ userId: string; state: boolean } | null>(null);
   typingTimeout: any;
-
+  unSubscribe$ = new Subject<void>();
   newMessage = signal<string>('');
   authEmail = '';
   authPassword = '';
@@ -116,7 +114,7 @@ export class ChatComponent implements OnInit {
   typingState(chatId: string) {
     this.chatService
       .getChat(chatId)
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntil(this.unSubscribe$))
       .subscribe((chat) => {
         this.typingstatus.set(chat.typing);
         this.scrollToBottom();
@@ -125,7 +123,7 @@ export class ChatComponent implements OnInit {
 
   ngOnInit() {
     this.subscription.add(
-      this.chatService.currentUser$.pipe(takeUntilDestroyed()).subscribe((user) => {
+      this.chatService.currentUser$.pipe(takeUntil(this.unSubscribe$)).subscribe((user) => {
         this.currentUser.set(user);
         this.isLoggedIn.set(!!user);
 
@@ -154,7 +152,7 @@ export class ChatComponent implements OnInit {
     this.subscription.add(
       this.chatService
         .getOnlineUsers()
-        .pipe(takeUntilDestroyed())
+        .pipe(takeUntil(this.unSubscribe$))
         .subscribe((users) => {
           this.onlineUsers.set(users);
         })
@@ -163,7 +161,7 @@ export class ChatComponent implements OnInit {
     this.subscription.add(
       this.chatService
         .getAllUsers()
-        .pipe(takeUntilDestroyed())
+        .pipe(takeUntil(this.unSubscribe$))
         .subscribe((users) => {
           const otherUsers = users.filter((user) => user.uid !== this.currentUser()?.uid);
           this.users.set(otherUsers);
@@ -175,7 +173,7 @@ export class ChatComponent implements OnInit {
     this.subscription.add(
       this.chatService
         .getUserChats()
-        .pipe(takeUntilDestroyed())
+        .pipe(takeUntil(this.unSubscribe$))
         .subscribe((chats) => {
           this.chats.set(chats);
         })
@@ -208,7 +206,7 @@ export class ChatComponent implements OnInit {
     this.subscription.add(
       this.chatService
         .getPrivateMessages(otherUserId)
-        .pipe(takeUntilDestroyed())
+        .pipe(takeUntil(this.unSubscribe$))
         .subscribe((messages) => {
           this.newMessage.set('');
 
@@ -264,5 +262,9 @@ export class ChatComponent implements OnInit {
     return chat.lastMessage.length > maxLength
       ? chat.lastMessage.substring(0, maxLength) + '...'
       : chat.lastMessage;
+  }
+  ngOnDestroy(): void {
+    this.unSubscribe$.next();
+    this.unSubscribe$.complete();
   }
 }

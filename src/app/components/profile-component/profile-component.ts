@@ -18,7 +18,7 @@ import {
 } from '@angular/forms';
 import { Auth, User, onAuthStateChanged } from '@angular/fire/auth';
 import { UserProfile, UpdateProfileData } from '../../models/models';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import { ProfileService } from '../../services/profile-service';
 import { RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -41,6 +41,7 @@ export class ProfileComponent implements OnInit {
   currentUser = signal<User | null>(null);
   isLoading = signal(false);
   activeTab = signal<'profile' | 'security' | 'appearance'>('profile');
+  unSubscribe$ = new Subject<void>();
 
   isUploading = signal(false);
 
@@ -86,7 +87,7 @@ export class ProfileComponent implements OnInit {
     this.isLoading.set(true);
     this.userProfileService
       .getUserProfile(uid)
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntil(this.unSubscribe$))
       .subscribe({
         next: (profile) => {
           if (profile) {
@@ -190,5 +191,10 @@ export class ProfileComponent implements OnInit {
 
   getInitials(name: string): string {
     return name ? name.charAt(0).toUpperCase() : 'U';
+  }
+
+  ngOnDestroy(): void {
+    this.unSubscribe$.next();
+    this.unSubscribe$.complete();
   }
 }

@@ -17,7 +17,7 @@ import {
 } from '@angular/fire/auth';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -34,6 +34,7 @@ export class LoginComponent implements OnInit {
   currentUser = signal<any>(null);
   isLoggedIn = signal(false);
   showPassword = false;
+  unSubscribe$ = new Subject<void>();
 
   newMessage = '';
   authEmail = '';
@@ -44,7 +45,7 @@ export class LoginComponent implements OnInit {
   errorMessage = '';
   constructor(private toast: ToastrService, private router: Router) {}
   ngOnInit() {
-    this.chatService.currentUser$.pipe(takeUntilDestroyed()).subscribe((user) => {
+    this.chatService.currentUser$.pipe(takeUntil(this.unSubscribe$)).subscribe((user) => {
       this.currentUser.set(user);
     });
   }
@@ -145,5 +146,10 @@ export class LoginComponent implements OnInit {
   toggleRegister() {
     this.isRegistering = !this.isRegistering;
     this.errorMessage = '';
+  }
+
+  ngOnDestroy(): void {
+    this.unSubscribe$.next();
+    this.unSubscribe$.complete();
   }
 }
