@@ -1,19 +1,23 @@
-import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  OnDestroy,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UserProfile, Message, Chat } from '../../models/models';
-import { Subscription } from 'rxjs';
 import { FirebaseService } from '../../services/firebase';
 import {
   Auth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
-  signOut,
 } from '@angular/fire/auth';
-import { Firestore, doc, setDoc, serverTimestamp } from '@angular/fire/firestore';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-login',
@@ -21,18 +25,16 @@ import { Router } from '@angular/router';
   imports: [CommonModule, FormsModule],
   templateUrl: './login-component.html',
   styleUrls: ['./login-component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginComponent implements OnInit, OnDestroy {
+export class LoginComponent implements OnInit {
   private chatService = inject(FirebaseService);
   private auth = inject(Auth);
-  private subscription = new Subscription();
 
-  // Signals
   currentUser = signal<any>(null);
   isLoggedIn = signal(false);
   showPassword = false;
 
-  // Form fields
   newMessage = '';
   authEmail = '';
   authPassword = '';
@@ -42,11 +44,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   errorMessage = '';
   constructor(private toast: ToastrService, private router: Router) {}
   ngOnInit() {
-    this.subscription.add(
-      this.chatService.currentUser$.subscribe((user) => {
-        this.currentUser.set(user);
-      })
-    );
+    this.chatService.currentUser$.pipe(takeUntilDestroyed()).subscribe((user) => {
+      this.currentUser.set(user);
+    });
   }
 
   // Missing methods - Add these:
@@ -119,18 +119,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
   }
 
-  async logout() {
-    try {
-      await this.chatService.signOut();
-    } catch (error) {
-      this.errorMessage = 'Failed to logout';
-      this.toast.error(this.errorMessage);
-    } finally {
-      this.router.navigate(['login']);
-      this.toast.info('logout succesfully');
-    }
-  }
-
   private getAuthErrorMessage(error: any): string {
     switch (error.code) {
       case 'auth/email-already-in-use':
@@ -157,15 +145,5 @@ export class LoginComponent implements OnInit, OnDestroy {
   toggleRegister() {
     this.isRegistering = !this.isRegistering;
     this.errorMessage = '';
-  }
-
-  formatTimestamp(timestamp: any): string {
-    if (!timestamp) return '';
-    const date = timestamp.toDate();
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
-
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
   }
 }

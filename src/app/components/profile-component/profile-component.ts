@@ -1,4 +1,13 @@
-import { Component, inject, OnInit, OnDestroy, signal, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  OnDestroy,
+  signal,
+  ViewChild,
+  ElementRef,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormsModule,
@@ -13,6 +22,7 @@ import { Subscription } from 'rxjs';
 import { ProfileService } from '../../services/profile-service';
 import { RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   standalone: true,
@@ -20,12 +30,12 @@ import { ToastrService } from 'ngx-toastr';
   selector: 'app-profile-component',
   templateUrl: './profile-component.html',
   styleUrl: './profile-component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProfileComponent implements OnInit, OnDestroy {
+export class ProfileComponent implements OnInit {
   private auth = inject(Auth);
   private userProfileService = inject(ProfileService);
   private fb = inject(FormBuilder);
-  private subscription = new Subscription();
 
   userProfile = signal<UserProfile | null>(null);
   currentUser = signal<User | null>(null);
@@ -62,22 +72,22 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.subscription.add(
-      onAuthStateChanged(this.auth, (user) => {
-        this.currentUser.set(user);
-        if (user) {
-          this.loadUserProfile(user.uid);
-        } else {
-          this.userProfile.set(null);
-        }
-      })
-    );
+    onAuthStateChanged(this.auth, (user) => {
+      this.currentUser.set(user);
+      if (user) {
+        this.loadUserProfile(user.uid);
+      } else {
+        this.userProfile.set(null);
+      }
+    });
   }
 
   loadUserProfile(uid: string) {
     this.isLoading.set(true);
-    this.subscription.add(
-      this.userProfileService.getUserProfile(uid).subscribe({
+    this.userProfileService
+      .getUserProfile(uid)
+      .pipe(takeUntilDestroyed())
+      .subscribe({
         next: (profile) => {
           if (profile) {
             this.userProfile.set(profile);
@@ -94,8 +104,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
           this.toast.error('Error loading profile: ' + error);
           this.isLoading.set(false);
         },
-      })
-    );
+      });
   }
 
   async updateProfile() {
@@ -181,9 +190,5 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   getInitials(name: string): string {
     return name ? name.charAt(0).toUpperCase() : 'U';
-  }
-
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
   }
 }

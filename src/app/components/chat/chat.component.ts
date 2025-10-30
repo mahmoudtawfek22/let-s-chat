@@ -8,21 +8,15 @@ import {
   ViewChild,
   ElementRef,
   effect,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserProfile, Message, Chat } from '../../models/models';
 import { Subscription } from 'rxjs';
 import { FirebaseService } from '../../services/firebase';
-import {
-  Auth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  updateProfile,
-  signOut,
-} from '@angular/fire/auth';
-import { Firestore, doc, setDoc, serverTimestamp } from '@angular/fire/firestore';
 import { RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-chat',
@@ -30,11 +24,11 @@ import { RouterLink } from '@angular/router';
   styleUrl: './chat.component.scss',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChatComponent implements OnInit, OnDestroy {
+export class ChatComponent implements OnInit {
   private chatService = inject(FirebaseService);
-  private auth = inject(Auth);
-  private firestore = inject(Firestore);
+
   private subscription = new Subscription();
 
   users = signal<UserProfile[]>([]);
@@ -120,15 +114,18 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   typingState(chatId: string) {
-    this.chatService.getChat(chatId).subscribe((chat) => {
-      this.typingstatus.set(chat.typing);
-      this.scrollToBottom();
-    });
+    this.chatService
+      .getChat(chatId)
+      .pipe(takeUntilDestroyed())
+      .subscribe((chat) => {
+        this.typingstatus.set(chat.typing);
+        this.scrollToBottom();
+      });
   }
 
   ngOnInit() {
     this.subscription.add(
-      this.chatService.currentUser$.subscribe((user) => {
+      this.chatService.currentUser$.pipe(takeUntilDestroyed()).subscribe((user) => {
         this.currentUser.set(user);
         this.isLoggedIn.set(!!user);
 
@@ -155,24 +152,33 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   loadUsers() {
     this.subscription.add(
-      this.chatService.getOnlineUsers().subscribe((users) => {
-        this.onlineUsers.set(users);
-      })
+      this.chatService
+        .getOnlineUsers()
+        .pipe(takeUntilDestroyed())
+        .subscribe((users) => {
+          this.onlineUsers.set(users);
+        })
     );
 
     this.subscription.add(
-      this.chatService.getAllUsers().subscribe((users) => {
-        const otherUsers = users.filter((user) => user.uid !== this.currentUser()?.uid);
-        this.users.set(otherUsers);
-      })
+      this.chatService
+        .getAllUsers()
+        .pipe(takeUntilDestroyed())
+        .subscribe((users) => {
+          const otherUsers = users.filter((user) => user.uid !== this.currentUser()?.uid);
+          this.users.set(otherUsers);
+        })
     );
   }
 
   loadChats() {
     this.subscription.add(
-      this.chatService.getUserChats().subscribe((chats) => {
-        this.chats.set(chats);
-      })
+      this.chatService
+        .getUserChats()
+        .pipe(takeUntilDestroyed())
+        .subscribe((chats) => {
+          this.chats.set(chats);
+        })
     );
   }
 
@@ -200,15 +206,18 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   loadPrivateMessages(otherUserId: string) {
     this.subscription.add(
-      this.chatService.getPrivateMessages(otherUserId).subscribe((messages) => {
-        this.newMessage.set('');
+      this.chatService
+        .getPrivateMessages(otherUserId)
+        .pipe(takeUntilDestroyed())
+        .subscribe((messages) => {
+          this.newMessage.set('');
 
-        this.messages.set(messages);
+          this.messages.set(messages);
 
-        setTimeout(() => {
-          this.scrollToBottom();
-        }, 100);
-      })
+          setTimeout(() => {
+            this.scrollToBottom();
+          }, 100);
+        })
     );
   }
 
@@ -255,9 +264,5 @@ export class ChatComponent implements OnInit, OnDestroy {
     return chat.lastMessage.length > maxLength
       ? chat.lastMessage.substring(0, maxLength) + '...'
       : chat.lastMessage;
-  }
-
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
   }
 }
