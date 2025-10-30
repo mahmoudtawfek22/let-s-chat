@@ -33,11 +33,8 @@ export class FirebaseService {
   constructor() {
     // Track auth state
     onAuthStateChanged(this.auth, (user) => {
-      console.log(this.auth, 'this.auth');
       this.currentUserSubject.next(user);
       if (user) {
-        console.log(this.auth, 'this.auth');
-
         this.updateUserOnlineStatus(user.uid, true);
         this.createUserProfile(user);
       }

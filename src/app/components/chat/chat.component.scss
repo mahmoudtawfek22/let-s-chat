@@ -259,10 +259,11 @@
 
 .message {
   margin-bottom: 15px;
-  padding: 10px 15px;
+  padding: 10px 15px 0px;
   border-radius: 10px;
   background: var(--purple-50);
-  width: fit-content;
+  // width: fit-content;
+  min-width: 6rem;
   max-width: 50%;
 }
 
@@ -306,7 +307,12 @@
   margin-right: 10px;
   outline: none;
 }
-
+.message .timestamp {
+  display: block;
+  text-align: right;
+  color: rgb(206, 202, 202);
+  font-size: small;
+}
 .send-btn {
   padding: 12px 25px;
   background: #3498db;
@@ -327,6 +333,8 @@
 }
 
 @media (max-width: 768px) {
+  .message {
+  }
   .list-chat-toggle-btn {
     display: block;
     cursor: pointer;

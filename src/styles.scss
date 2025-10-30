@@ -1,12 +1,12 @@
 :root {
-  --primary-cyan: #06B6D4;
-  --primary-purple: #7C3AED;
+  --primary-cyan: #06b6d4;
+  --primary-purple: #7c3aed;
 
   --cyan-50: #f0fdff;
   --cyan-100: #e0faff;
   --cyan-200: #baf2ff;
   --cyan-300: #7ee7ff;
-  --cyan-400: #06B6D4;
+  --cyan-400: #06b6d4;
   --cyan-500: #00a3c4;
   --cyan-600: #0082a3;
   --cyan-700: #006683;
@@ -15,7 +15,7 @@
   --purple-100: #f3e8ff;
   --purple-200: #e9d5ff;
   --purple-300: #d8b4fe;
-  --purple-400: #7C3AED;
+  --purple-400: #7c3aed;
   --purple-500: #6d28d9;
   --purple-600: #5b21b6;
   --purple-700: #4c1d95;
@@ -49,7 +49,7 @@
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, var(--cyan-50) 0%, var(--purple-50) 100%);
+  background: white;
   min-height: 100vh;
   color: var(--gray-800);
 }

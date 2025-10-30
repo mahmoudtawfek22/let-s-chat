@@ -161,9 +161,9 @@
           <div class="message" [class.own-message]="message.senderId === currentUser()?.uid">
             <div class="message-header">
               <strong>{{ message.senderName }}</strong>
-              <span class="timestamp">{{ formatTimestamp(message.timestamp) }}</span>
             </div>
             <div class="message-text">{{ message.text }}</div>
+            <span class="timestamp">{{ formatTimestamp(message.timestamp) }}</span>
           </div>
           } @if (typingstatus()?.state && selectedUser()?.uid == typingstatus()?.userId) {
           <div class="typing-indicator">

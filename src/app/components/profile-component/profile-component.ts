@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormsModule,
@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 import { ProfileService } from '../../services/profile-service';
 import { RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { Modal } from 'bootstrap';
 
 @Component({
   standalone: true,
@@ -119,6 +120,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
       if (result.success) {
         this.toast.success('Profile updated successfully');
+        this.loadUserProfile(this.currentUser()?.uid ?? '');
       } else {
         this.toast.error('Failed to update profile: ' + result.error);
       }

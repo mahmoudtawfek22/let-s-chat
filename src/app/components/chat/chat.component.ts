@@ -49,7 +49,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   typingstatus = signal<{ userId: string; state: boolean } | null>(null);
   typingTimeout: any;
 
-  newMessage = '';
+  newMessage = signal<string>('');
   authEmail = '';
   authPassword = '';
   displayName = '';
@@ -60,14 +60,12 @@ export class ChatComponent implements OnInit, OnDestroy {
   @ViewChild('chatContainer', { static: true }) chatContainer!: ElementRef;
   constructor(private renderer2: Renderer2) {
     effect(() => {
-      console.log(this.chatView());
-
       if (this.selectedChat() || this.selectedUser()) {
         const currentUser = this.currentUser().uid;
         const other = this.selectedUser()?.uid;
         const chatId = this.chatService.getOrCreateChat(currentUser, other);
         this.typingState(chatId);
-        this.newMessage = '';
+        this.newMessage.set('');
       }
     });
   }
@@ -89,7 +87,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     const currentUser = this.currentUser().uid;
     const other = this.selectedUser()?.uid;
     const chatId = this.chatService.getOrCreateChat(currentUser, other);
-    console.log(currentUser, '????', other, '???', chatId);
 
     this.chatService.updateChatMetadata(
       chatId,
@@ -147,67 +144,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     );
   }
 
-  async handleAuth() {
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    try {
-      if (this.isRegistering) {
-        await this.handleRegister();
-      } else {
-        await this.handleLogin();
-      }
-    } catch (error: any) {
-      console.error('Authentication error:', error);
-      this.errorMessage = this.getAuthErrorMessage(error);
-    } finally {
-      this.isLoading = false;
-    }
-  }
-
-  private async handleRegister() {
-    const email = this.authEmail;
-    const password = this.authPassword;
-    const displayName = this.displayName;
-
-    if (!email || !password) {
-      this.errorMessage = 'Please fill in all fields';
-      return;
-    }
-
-    if (password.length < 6) {
-      this.errorMessage = 'Password must be at least 6 characters';
-      return;
-    }
-
-    const { user } = await createUserWithEmailAndPassword(this.auth, email, password);
-
-    if (displayName) {
-      await updateProfile(user, { displayName });
-    }
-
-    await this.chatService.createUserProfile(user);
-
-    this.authEmail = '';
-    this.authPassword = '';
-    this.displayName = '';
-  }
-
-  private async handleLogin() {
-    const email = this.authEmail;
-    const password = this.authPassword;
-
-    if (!email || !password) {
-      this.errorMessage = 'Please fill in email and password';
-      return;
-    }
-
-    await signInWithEmailAndPassword(this.auth, email, password);
-
-    this.authEmail = '';
-    this.authPassword = '';
-  }
-
   async logout() {
     try {
       await this.chatService.signOut();
@@ -215,32 +151,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       console.error('Logout error:', error);
       this.errorMessage = 'Failed to logout';
     }
-  }
-
-  private getAuthErrorMessage(error: any): string {
-    switch (error.code) {
-      case 'auth/email-already-in-use':
-        return 'This email is already registered. Please login instead.';
-      case 'auth/invalid-email':
-        return 'Invalid email address format.';
-      case 'auth/weak-password':
-        return 'Password should be at least 6 characters.';
-      case 'auth/user-not-found':
-        return 'No account found with this email.';
-      case 'auth/wrong-password':
-        return 'Incorrect password. Please try again.';
-      case 'auth/too-many-requests':
-        return 'Too many failed attempts. Please try again later.';
-      case 'auth/network-request-failed':
-        return 'Network error. Please check your connection.';
-      default:
-        return `Authentication failed: ${error.message}`;
-    }
-  }
-
-  toggleRegister() {
-    this.isRegistering = !this.isRegistering;
-    this.errorMessage = '';
   }
 
   loadUsers() {
@@ -291,6 +201,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   loadPrivateMessages(otherUserId: string) {
     this.subscription.add(
       this.chatService.getPrivateMessages(otherUserId).subscribe((messages) => {
+        this.newMessage.set('');
+
         this.messages.set(messages);
 
         setTimeout(() => {
@@ -301,20 +213,19 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   async sendMessage() {
-    if (this.newMessage.trim() && this.selectedUser()) {
+    if (this.newMessage().trim() && this.selectedUser()) {
       this.stoptyping();
-      const result = await this.chatService.sendPrivateMessage(
-        this.selectedUser()!.uid,
-        this.newMessage.trim()
-      );
+      try {
+        const result = await this.chatService.sendPrivateMessage(
+          this.selectedUser()!.uid,
+          this.newMessage().trim()
+        );
 
-      if (result.success) {
-        this.newMessage = '';
         this.loadChats();
 
         this.scrollToBottom();
-      } else {
-        alert('Failed to send message: ' + result.error);
+      } catch (error: any) {
+        alert('Failed to send message: ' + error);
       }
     }
   }

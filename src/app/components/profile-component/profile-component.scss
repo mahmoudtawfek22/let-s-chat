@@ -3,6 +3,8 @@
   margin: 0 auto;
   padding: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+  background: white;
 }
 
 .loading-spinner {
@@ -16,26 +18,170 @@
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+  min-height: 100vh;
+
   overflow: hidden;
 }
 
+// .profile-header {
+//   padding: 30px;
+//   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+//   color: white;
+//   text-align: center;
+// }
+
+// .profile-header h2 {
+//   margin: 0 0 10px 0;
+//   font-size: 28px;
+// }
+
+// .profile-header p {
+//   margin: 0;
+//   opacity: 0.9;
+// }
+/* Header Styles */
 .profile-header {
-  padding: 30px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  text-align: center;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  padding: 0 1rem;
 }
 
-.profile-header h2 {
-  margin: 0 0 10px 0;
-  font-size: 28px;
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-text h2 {
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1.8rem;
+  font-weight: 600;
 }
 
 .profile-header p {
-  margin: 0;
-  opacity: 0.9;
+  margin-top: 1rem;
+  color: #7f8c8d;
+  font-size: 0.95rem;
 }
 
+/* Animated Chat Navigation Button */
+.chat-nav-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  min-width: 140px;
+}
+
+.chat-nav-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.chat-nav-btn:active {
+  transform: translateY(0);
+}
+
+.btn-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 2;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.chat-nav-btn:hover .btn-content {
+  transform: translateX(-2px);
+}
+
+.btn-icon {
+  font-size: 1.1rem;
+  transition: transform 0.3s ease;
+}
+
+.chat-nav-btn:hover .btn-icon {
+  transform: scale(1.1);
+}
+
+.btn-text {
+  white-space: nowrap;
+}
+
+.btn-hover-effect {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.chat-nav-btn:hover .btn-hover-effect {
+  left: 100%;
+}
+
+/* Pulse animation for attention */
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.6);
+  }
+  100% {
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+}
+
+.chat-nav-btn {
+  animation: pulse-glow 2s infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .chat-nav-btn {
+    align-self: flex-start;
+  }
+
+  .header-text h2 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-nav-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    min-width: 120px;
+  }
+
+  .btn-text {
+    font-size: 0.85rem;
+  }
+}
 .tabs-container {
   display: flex;
   background: #f8f9fa;
@@ -111,7 +257,13 @@
   gap: 10px;
   justify-content: center;
 }
-
+.modalbtn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white;
+  padding: 0.5rem 0.7rem;
+  border-radius: 10px;
+  border: none;
+}
 /* النماذج */
 .profile-form,
 .security-form {
@@ -120,7 +272,7 @@
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 1rem;
 }
 
 .form-group label {
@@ -134,7 +286,7 @@
 .form-textarea,
 .form-select {
   width: 100%;
-  padding: 12px 16px;
+  padding: 10px 14px;
   border: 2px solid #e9ecef;
   border-radius: 8px;
   font-size: 16px;
@@ -213,8 +365,8 @@
 
 /* قسم الأمان */
 .security-section {
-  margin-bottom: 40px;
-  padding-bottom: 30px;
+  // margin-bottom: 40px;
+  padding-bottom: 20px;
   border-bottom: 1px solid #e9ecef;
 }
 
@@ -266,15 +418,17 @@
 /* التجاوب مع الشاشات الصغيرة */
 @media (max-width: 768px) {
   .user-profile-container {
-    padding: 10px;
+    padding: 0;
   }
-
+  .profile-card {
+    border-radius: 0px;
+  }
   .tab-content {
     padding: 20px;
   }
 
   .tabs-container {
-    flex-direction: column;
+    flex-direction: row;
   }
 
   .photo-actions {
