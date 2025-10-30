@@ -95,7 +95,7 @@
 .users-list {
   flex: 1;
   overflow-y: auto;
-  min-height: 0; /* Important for flex child scrolling */
+  min-height: 0;
 }
 
 .chat-item,
@@ -176,7 +176,7 @@
   display: flex;
   flex-direction: column;
   background: #ecf0f1;
-  margin-left: 350px; /* Account for fixed sidebar */
+  margin-left: 350px;
   width: calc(100% - 350px);
   height: 100vh;
 }
@@ -374,7 +374,6 @@
   }
 }
 
-/* مؤشر الكتابة */
 .typing-indicator {
   display: flex;
   align-items: center;
