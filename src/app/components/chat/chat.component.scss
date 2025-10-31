@@ -7,7 +7,7 @@
 .main-chat-interface {
   display: flex;
   width: 100%;
-  height: 100vh;
+  height: 100%;
 }
 
 .sidebar {
@@ -16,7 +16,7 @@
   color: white;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
   position: fixed;
   left: 0;
   top: 0;
@@ -173,12 +173,11 @@
 /* Chat Area */
 .chat-area {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  background: #ecf0f1;
+  // display: flex;
+  // flex-direction: column;
+  background: #e88813;
   margin-left: 350px;
-  // width: calc(100% - 350px);
-  height: 100vh;
+  height: 100%;
 }
 
 .no-chat-selected {
@@ -201,9 +200,11 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  position: relative;
+  height: calc(100% - 7.5rem);
   margin-top: 3rem;
   margin-bottom: 4.5rem;
+  position: relative;
+  background-color: #2980b9;
 }
 
 /* Fixed Chat Header */
@@ -251,8 +252,10 @@
 .messages-container {
   padding: 20px;
   overflow-y: auto;
-  background: white;
-  flex: 1;
+  background: rgb(169, 23, 96);
+  height: 100%;
+  // margin-top: 3rem;
+  // margin-bottom: 4.5rem;
 }
 
 .message {
