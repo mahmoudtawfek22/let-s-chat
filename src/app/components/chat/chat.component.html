@@ -137,23 +137,24 @@
         </div>
       </div>
       } @if (selectedUser()) {
-      <div class="active-chat">
-        <!-- Chat Header -->
-        <div class="chat-header">
-          <div class="chat-partner-info">
-            <div class="partner-details">
-              <div class="list-chat-toggle-btn">
-                <i class="fa-solid fa-arrow-left" (click)="toggleToList()"></i>
-              </div>
-              <div>
-                <strong>{{ selectedUser()?.displayName }}</strong>
-                <span class="status" [class.online]="selectedUser()?.isOnline">
-                  {{ selectedUser()?.isOnline ? 'Online' : 'Offline' }}
-                </span>
-              </div>
+
+      <div class="chat-header">
+        <div class="chat-partner-info">
+          <div class="partner-details">
+            <div class="list-chat-toggle-btn">
+              <i class="fa-solid fa-arrow-left" (click)="toggleToList()"></i>
+            </div>
+            <div>
+              <strong>{{ selectedUser()?.displayName }}</strong>
+              <span class="status" [class.online]="selectedUser()?.isOnline">
+                {{ selectedUser()?.isOnline ? 'Online' : 'Offline' }}
+              </span>
             </div>
           </div>
         </div>
+      </div>
+      <div class="active-chat">
+        <!-- Chat Header -->
 
         <!-- Messages Container -->
         <div class="messages-container">
@@ -178,18 +179,18 @@
           }
 
           <!-- Message Input -->
-          <div class="message-input">
-            <input
-              type="text"
-              [(ngModel)]="newMessage"
-              (keyup.enter)="sendMessage()"
-              (input)="typing()"
-              placeholder="Type your message..."
-              class="message-input-field"
-            />
-            <button (click)="sendMessage()" class="send-btn">Send</button>
-          </div>
         </div>
+      </div>
+      <div class="message-input">
+        <input
+          type="text"
+          [(ngModel)]="newMessage"
+          (keyup.enter)="sendMessage()"
+          (input)="typing()"
+          placeholder="Type your message..."
+          class="message-input-field"
+        />
+        <button (click)="sendMessage()" class="send-btn">Send</button>
       </div>
       }
     </div>

@@ -177,7 +177,7 @@
   flex-direction: column;
   background: #ecf0f1;
   margin-left: 350px;
-  width: calc(100% - 350px);
+  // width: calc(100% - 350px);
   height: 100vh;
 }
 
@@ -201,8 +201,9 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: 100vh;
   position: relative;
+  margin-top: 3rem;
+  margin-bottom: 4.5rem;
 }
 
 /* Fixed Chat Header */
@@ -252,9 +253,6 @@
   overflow-y: auto;
   background: white;
   flex: 1;
-  margin-top: 3rem;
-  margin-bottom: 4.5rem;
-  height: calc(100% - 4.5rem);
 }
 
 .message {
