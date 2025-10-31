@@ -254,7 +254,7 @@
   flex: 1;
   margin-top: 3rem;
   margin-bottom: 4.5rem;
-  min-height: 0;
+  height: calc(100% - 4.5rem);
 }
 
 .message {
