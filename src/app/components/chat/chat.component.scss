@@ -175,7 +175,7 @@
   flex: 1;
   // display: flex;
   // flex-direction: column;
-  background: white;
+  background: rgb(170, 33, 33);
   margin-left: 350px;
   height: 100%;
 }
@@ -197,9 +197,10 @@
 }
 
 .active-chat {
-  flex: 1;
+  // flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
   height: calc(100% - 7.5rem);
   margin-top: 3rem;
   margin-bottom: 4.5rem;
@@ -253,9 +254,10 @@
   padding: 20px;
   overflow-y: auto;
   background: white;
-  height: 100%;
-  // margin-top: 3rem;
-  // margin-bottom: 4.5rem;
+  height: fit-content;
+  max-height: 100%;
+  margin-top: 0.1px;
+  margin-bottom: 0.1px;
 }
 
 .message {
