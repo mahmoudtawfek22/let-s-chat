@@ -50,6 +50,8 @@ export class ChatComponent implements OnInit {
   errorMessage = '';
   activeTab = signal<'users' | 'chats'>('chats');
   @ViewChild('chatContainer', { static: true }) chatContainer!: ElementRef;
+  @ViewChild('container', { static: false }) container!: ElementRef;
+
   constructor(private renderer2: Renderer2) {
     effect(() => {
       if (this.selectedChat() || this.selectedUser()) {
@@ -208,7 +210,10 @@ export class ChatComponent implements OnInit {
         .getPrivateMessages(otherUserId)
         .pipe(takeUntil(this.unSubscribe$))
         .subscribe((messages) => {
-          this.newMessage.set('');
+          console.log(messages[0]);
+          if (messages.at(-1)?.senderId == this.currentUser().uid) {
+            this.newMessage.set('');
+          }
 
           this.messages.set(messages);
 
@@ -229,21 +234,26 @@ export class ChatComponent implements OnInit {
         );
 
         this.loadChats();
-
-        this.scrollToBottom();
       } catch (error: any) {
         alert('Failed to send message: ' + error);
       }
     }
   }
 
-  scrollToBottom() {
-    const messagesContainer = document.querySelector('.messages-container');
-    if (messagesContainer) {
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  scrollToBottom(): void {
+    if (this.container?.nativeElement) {
+      const el = this.container.nativeElement;
+      const scrollHeight = el.scrollHeight;
+
+      this.renderer2.setProperty(el, 'scrollTop', scrollHeight);
     }
   }
-
+  // scrollToBottom() {
+  //   const messagesContainer = document.querySelector('.messages-container');
+  //   if (messagesContainer) {
+  //     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  //   }
+  // }
   formatTimestamp(timestamp: any): string {
     if (!timestamp) return '';
     const date = timestamp.toDate();
