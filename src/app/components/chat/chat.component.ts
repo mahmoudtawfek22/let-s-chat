@@ -27,8 +27,6 @@ import { RouterLink } from '@angular/router';
 export class ChatComponent implements OnInit {
   private chatService = inject(FirebaseService);
 
-  private subscription = new Subscription();
-
   users = signal<UserProfile[]>([]);
   onlineUsers = signal<UserProfile[]>([]);
   chats = signal<Chat[]>([]);
@@ -124,21 +122,19 @@ export class ChatComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.subscription.add(
-      this.chatService.currentUser$.pipe(takeUntil(this.unSubscribe$)).subscribe((user) => {
-        this.currentUser.set(user);
-        this.isLoggedIn.set(!!user);
+    this.chatService.currentUser$.pipe(takeUntil(this.unSubscribe$)).subscribe((user) => {
+      this.currentUser.set(user);
+      this.isLoggedIn.set(!!user);
 
-        if (user) {
-          this.loadUsers();
-          this.loadChats();
-        } else {
-          this.users.set([]);
-          this.chats.set([]);
-          this.messages.set([]);
-        }
-      })
-    );
+      if (user) {
+        this.loadUsers();
+        this.loadChats();
+      } else {
+        this.users.set([]);
+        this.chats.set([]);
+        this.messages.set([]);
+      }
+    });
   }
 
   async logout() {
@@ -151,35 +147,29 @@ export class ChatComponent implements OnInit {
   }
 
   loadUsers() {
-    this.subscription.add(
-      this.chatService
-        .getOnlineUsers()
-        .pipe(takeUntil(this.unSubscribe$))
-        .subscribe((users) => {
-          this.onlineUsers.set(users);
-        })
-    );
+    this.chatService
+      .getOnlineUsers()
+      .pipe(takeUntil(this.unSubscribe$))
+      .subscribe((users) => {
+        this.onlineUsers.set(users);
+      });
 
-    this.subscription.add(
-      this.chatService
-        .getAllUsers()
-        .pipe(takeUntil(this.unSubscribe$))
-        .subscribe((users) => {
-          const otherUsers = users.filter((user) => user.uid !== this.currentUser()?.uid);
-          this.users.set(otherUsers);
-        })
-    );
+    this.chatService
+      .getAllUsers()
+      .pipe(takeUntil(this.unSubscribe$))
+      .subscribe((users) => {
+        const otherUsers = users.filter((user) => user.uid !== this.currentUser()?.uid);
+        this.users.set(otherUsers);
+      });
   }
 
   loadChats() {
-    this.subscription.add(
-      this.chatService
-        .getUserChats()
-        .pipe(takeUntil(this.unSubscribe$))
-        .subscribe((chats) => {
-          this.chats.set(chats);
-        })
-    );
+    this.chatService
+      .getUserChats()
+      .pipe(takeUntil(this.unSubscribe$))
+      .subscribe((chats) => {
+        this.chats.set(chats);
+      });
   }
 
   selectUser(user: UserProfile) {
@@ -205,23 +195,21 @@ export class ChatComponent implements OnInit {
   }
 
   loadPrivateMessages(otherUserId: string) {
-    this.subscription.add(
-      this.chatService
-        .getPrivateMessages(otherUserId)
-        .pipe(takeUntil(this.unSubscribe$))
-        .subscribe((messages) => {
-          console.log(messages[0]);
-          if (messages.at(-1)?.senderId == this.currentUser().uid) {
-            this.newMessage.set('');
-          }
+    this.chatService
+      .getPrivateMessages(otherUserId)
+      .pipe(takeUntil(this.unSubscribe$))
+      .subscribe((messages) => {
+        console.log(messages[0]);
+        if (messages.at(-1)?.senderId == this.currentUser().uid) {
+          this.newMessage.set('');
+        }
 
-          this.messages.set(messages);
+        this.messages.set(messages);
 
-          setTimeout(() => {
-            this.scrollToBottom();
-          }, 100);
-        })
-    );
+        setTimeout(() => {
+          this.scrollToBottom();
+        }, 100);
+      });
   }
 
   async sendMessage() {
